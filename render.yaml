@@ -1,0 +1,13 @@
+
+services:
+  - type: web
+    name: telegram-bot
+    env: node
+    plan: free
+    buildCommand: 'npm install'
+    startCommand: 'npm start'
+    envVars:
+      - key: BOT_TOKEN
+        value: ton_token_telegram
+      - key: MONGODB_URI
+        value: mongodb+srv://<user>:<pass>@cluster.mongodb.net/nomdelabase
