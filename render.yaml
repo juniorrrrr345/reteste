@@ -5,9 +5,9 @@ services:
     env: node
     plan: free
     buildCommand: 'npm install'
-    startCommand: 'npm start'
+    startCommand: 'node index.js'
     envVars:
       - key: BOT_TOKEN
         value: ton_token_telegram
       - key: MONGODB_URI
-        value: mongodb+srv://<user>:<pass>@cluster.mongodb.net/nomdelabase
+        value: mongodb+srv://fxxrev:<TON_MOT_DE_PASSE>@cluster0.qa5j3nm.mongodb.net/telegrambot

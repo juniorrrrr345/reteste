@@ -1,7 +1,7 @@
 
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import TelegramBot from 'node-telegram-bot-api';
+import { Telegraf } from 'telegraf';
 
 import Product from './product.model.js';
 import Bot from './Bot.model.js';
@@ -9,11 +9,7 @@ import StatsUser from './StatsUser.model.js';
 
 dotenv.config();
 
-const token = process.env.BOT_TOKEN;
-if (!token) {
-  console.error('Erreur : BOT_TOKEN non défini dans le fichier .env');
-  process.exit(1);
-}
+const bot = new Telegraf(process.env.BOT_TOKEN);
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
@@ -21,14 +17,12 @@ mongoose.connect(process.env.MONGODB_URI, {
 }).then(() => {
   console.log('Connecté à MongoDB');
 }).catch((err) => {
-  console.error('Erreur de connexion MongoDB :', err);
+  console.error('Erreur MongoDB :', err);
   process.exit(1);
 });
 
-const bot = new TelegramBot(token, { polling: true });
-
-bot.onText(/\/start/, async (msg) => {
-  const chatId = msg.chat.id;
+bot.start(async (ctx) => {
+  const from = ctx.from;
 
   let configBot = await Bot.findOne();
   if (!configBot) {
@@ -37,11 +31,11 @@ bot.onText(/\/start/, async (msg) => {
   }
 
   const userData = {
-    id: msg.from.id,
-    username: msg.from.username || '',
-    first_name: msg.from.first_name || '',
-    last_name: msg.from.last_name || '',
-    language_code: msg.from.language_code || ''
+    id: String(from.id),
+    username: from.username || '',
+    first_name: from.first_name || '',
+    last_name: from.last_name || '',
+    language_code: from.language_code || ''
   };
 
   await StatsUser.findOneAndUpdate(
@@ -50,12 +44,14 @@ bot.onText(/\/start/, async (msg) => {
     { upsert: true }
   );
 
-  bot.sendMessage(chatId, configBot.messageBienvenue);
+  ctx.reply(configBot.messageBienvenue);
 });
 
-bot.on('message', (msg) => {
-  const chatId = msg.chat.id;
-  if (!msg.text.startsWith('/')) {
-    bot.sendMessage(chatId, "Commande non reconnue. Utilise /start pour commencer.");
+bot.on('text', (ctx) => {
+  if (!ctx.message.text.startsWith('/')) {
+    ctx.reply("Commande non reconnue. Utilise /start pour commencer.");
   }
 });
+
+bot.launch();
+console.log('Bot lancé avec Telegraf');

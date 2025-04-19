@@ -1,5 +1,5 @@
 
-# Bot Telegram avec Node.js + MongoDB + Render
+# Bot Telegram avec Telegraf + MongoDB + Render
 
 ## Installation
 
@@ -25,6 +25,5 @@ npm start
 ## Déploiement sur Render
 
 - Ajoute les variables d’environnement : `BOT_TOKEN` et `MONGODB_URI`
-- Utilise `render.yaml` pour configuration automatique
+- Utilise `render.yaml` pour config auto
 - Désactive l'auto-sleep pour un bot en polling
-
